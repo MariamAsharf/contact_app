@@ -3,30 +3,40 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 
-class BottomScreenSheet extends StatefulWidget {
-  final Function(String, String, String, String) onAddContact;
+class AddContactSheet extends StatefulWidget {
+  final Function(String, String, String, File?) onAdd;
 
-  const BottomScreenSheet({super.key, required this.onAddContact});
+  AddContactSheet({required this.onAdd});
 
   @override
-  State<BottomScreenSheet> createState() => _BottomScreenSheetState();
+  _AddContactSheetState createState() => _AddContactSheetState();
 }
 
-class _BottomScreenSheetState extends State<BottomScreenSheet> {
-  String UserName = "User Name";
-  String UserEmail = "example@email.com";
-  String UserPhone = "+200000000000";
-  XFile? _pickedImage;
-
+class _AddContactSheetState extends State<AddContactSheet> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  File? _image;
   final ImagePicker _picker = ImagePicker();
 
-  void _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    setState(
-      () {
-        _pickedImage = image;
-      },
-    );
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  void _enterData() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    if (name.isNotEmpty && email.isNotEmpty && phone.isNotEmpty) {
+      widget.onAdd(name, email, phone, _image);
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -62,16 +72,16 @@ class _BottomScreenSheetState extends State<BottomScreenSheet> {
                           color: const Color(0xFFFFF1D4),
                         ),
                       ),
-                      child: _pickedImage == null
+                      child: _image == null
                           ? Lottie.asset("assets/images/image_picker.json",
-                              width: 143, height: 146)
+                          width: 143, height: 146)
                           : ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.file(
-                                File(_pickedImage!.path),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.file(
+                          _image!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -80,7 +90,7 @@ class _BottomScreenSheetState extends State<BottomScreenSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          UserName,
+                          _nameController.text.isEmpty ? "User Name" : _nameController.text,
                           style: const TextStyle(
                             color: Color(0xFFFFF1D4),
                             fontSize: 16,
@@ -88,11 +98,9 @@ class _BottomScreenSheetState extends State<BottomScreenSheet> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Divider(
-                          color: Color(0xFFFFF1D4),
-                        ),
+                        const Divider(color: Color(0xFFFFF1D4)),
                         Text(
-                          UserEmail,
+                          _emailController.text.isEmpty ? "example@email.com" : _emailController.text,
                           style: const TextStyle(
                             color: Color(0xFFFFF1D4),
                             fontSize: 16,
@@ -100,11 +108,9 @@ class _BottomScreenSheetState extends State<BottomScreenSheet> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Divider(
-                          color: Color(0xFFFFF1D4),
-                        ),
+                        const Divider(color: Color(0xFFFFF1D4)),
                         Text(
-                          UserPhone,
+                          _phoneController.text.isEmpty ? "+200000000000" : _phoneController.text,
                           style: const TextStyle(
                             color: Color(0xFFFFF1D4),
                             fontSize: 16,
@@ -118,72 +124,67 @@ class _BottomScreenSheetState extends State<BottomScreenSheet> {
               ),
               const SizedBox(height: 16),
               TextField(
-                style: const TextStyle(
-                  color: Color(0xFFFFF1D4),
-                ),
+                controller: _nameController,
+                style: const TextStyle(color: Color(0xFFFFF1D4)),
                 decoration: InputDecoration(
                   hintText: "Enter User Name",
-                  hintStyle: const TextStyle(
-                    color: Color(0xFFFFF1D4),
-                  ),
+                  hintStyle: const TextStyle(color: Color(0xFFFFF1D4)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFFFF1D4),
-                    ),
+                    borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
                   ),
                 ),
-                onChanged: (value) {
-                  setState() {
-                    UserName = value.isEmpty ? "User Name" : value;
-                  }
-                },
+                onChanged: (value) => setState(() {}),
               ),
               const SizedBox(height: 8),
               TextField(
-                style: const TextStyle(
-                  color: Color(0xFFFFF1D4),
-                ),
+                controller: _emailController,
+                style: const TextStyle(color: Color(0xFFFFF1D4)),
                 decoration: InputDecoration(
                   hintText: "Enter User Email",
-                  hintStyle: const TextStyle(
-                    color: Color(0xFFFFF1D4),
-                  ),
+                  hintStyle: const TextStyle(color: Color(0xFFFFF1D4)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFFFF1D4),
-                    ),
+                    borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
+                  ),focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
                 ),
-                onChanged: (value) {
-                  setState() {
-                    UserEmail = value.isEmpty ? "example@email.com" : value;
-                  }
-                },
+                ),
+                onChanged: (value) => setState(() {}),
               ),
               const SizedBox(height: 8),
               TextField(
-                style: const TextStyle(
-                  color: Color(0xFFFFF1D4),
-                ),
+                controller: _phoneController,
+                style: const TextStyle(color: Color(0xFFFFF1D4)),
                 decoration: InputDecoration(
                   hintText: "Enter User Phone",
-                  hintStyle: const TextStyle(
-                    color: Color(0xFFFFF1D4),
-                  ),
+                  hintStyle: const TextStyle(color: Color(0xFFFFF1D4)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFFFF1D4),
-                    ),
+                    borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
+                  ),focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFFFFF1D4)),
                 ),
-                onChanged: (value) {
-                  setState() {
-                    UserPhone = value.isEmpty ? "+200000000000" : value;
-                  }
-                },
+                ),
+                onChanged: (value) => setState(() {}),
               ),
               const SizedBox(height: 8),
               ElevatedButton(
@@ -194,15 +195,7 @@ class _BottomScreenSheetState extends State<BottomScreenSheet> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                onPressed: () {
-                  widget.onAddContact(
-                    UserName,
-                    UserEmail,
-                    UserPhone,
-                    _pickedImage?.path ?? "",
-                  );
-                  Navigator.pop(context);
-                },
+                onPressed: _enterData,
                 child: const Center(
                   child: Text(
                     "Enter user",
@@ -214,7 +207,6 @@ class _BottomScreenSheetState extends State<BottomScreenSheet> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
             ],
           ),

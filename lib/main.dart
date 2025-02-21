@@ -1,23 +1,16 @@
-import 'package:contact_app/contact_info.dart';
-import 'package:contact_app/home_screen.dart';
-
 import 'package:flutter/material.dart';
+import 'screens/home_screen.dart';
 
 void main() {
-  runApp(const ContactApp());
+  runApp(MyApp());
 }
 
-class ContactApp extends StatelessWidget {
-  const ContactApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomeScreen(),
-      },
+      home: HomeScreen(),
     );
   }
 }
